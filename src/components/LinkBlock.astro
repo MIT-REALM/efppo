@@ -1,0 +1,46 @@
+---
+export interface Link {
+    name: string;
+    url: string;
+    icon_class: string;
+    disabled: string | undefined;
+}
+export interface Props {
+    links: Link[];
+}
+
+const {links} = Astro.props;
+---
+<div class="publication-links">
+    {links.map((link) => {
+        // <span class="link-block">
+        //     <a href={link.url} class="external-link button is-normal is-rounded is-dark">
+        //         <span class="icon">
+        //             <i class={link.icon_class} />
+        //         </span>
+        //         <span>{link.name}</span>
+        //     </a>
+        // </span>
+
+        let attributes = {};
+        if (link.url !== undefined) {
+            attributes["onclick"] = `window.location.href=${link.url}`;
+        }
+        if (link.disabled !== undefined) {
+            attributes["disabled"] = true;
+            attributes["title"] = link.disabled;
+        }
+        return (
+                <button {...attributes} class="external-link button is-normal is-rounded is-dark">
+            <span class="icon">
+                <i class={link.icon_class}/>
+            </span>
+                    <span>{link.name}</span>
+                </button>);
+    })}
+</div>
+<style>
+    button.button {
+        margin: 0.15em 0.4em;
+    }
+</style>
