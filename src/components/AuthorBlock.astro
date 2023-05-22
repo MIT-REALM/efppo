@@ -12,12 +12,12 @@ const { authors } = Astro.props;
 ---
 <div class="publication-authors">
     {authors.map((author, ii) => (
-        <span><a href={author.url}>{author.name}</a>{ii < authors.length - 1 && ", "}</span>
+        <><a href={author.url}>{author.name}</a>{ii < authors.length - 1 && ", "}</>
     ))}
 </div>
 
 <div class="publication-authors">
-    <span class="author-block">Massachusetts Institute of Technology</span>
+    Massachusetts Institute of Technology
 </div>
 
 <style>

@@ -18,8 +18,8 @@ const authors: Author[] = [
 const links: Link[] = [
     // {"name": "Paper", "url": "b", "icon_class": "fas fa-file-pdf"},
     // {"name": "arXiv", "url": "b", "icon_class": "ial icon-arxiv-logo-small"},
-    {"name": "Paper (Coming Soon)", "disabled": "Coming Soon", "icon_class": "fas fa-file-pdf"},
-    {"name": "arXiv (Coming Soon)", "disabled": "Coming Soon", "icon_class": "ial icon-arxiv-logo-small"},
+    {"name": "Paper (Soon)", "disabled": "Coming Soon", "icon_class": "fas fa-file-pdf"},
+    {"name": "arXiv (Soon)", "disabled": "Coming Soon", "icon_class": "ial icon-arxiv-logo-small"},
     // {"name": "Presentation Video", "url": "b", "icon_class": "fab fa-youtube"},
 ]
 
@@ -30,54 +30,53 @@ const bibtex = `
   booktitle = {Proceedings of Robotics: Science and Systems},
   year      = {2023}
 }
-`;
+`.trim();
 
 const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
 ---
 
 <Layout site_title={site_title} title={title} authors={authors} links={links} bibtex={bibtex} ga={ga}>
-    <section class="is-small teaser">
-        <div class="container is-max-desktop">
-            <div class="columns is-vcentered has-text-centered is-justify-content-center">
-                <h2 class="subtitle">
-                    <strong>Safe</strong> and <strong>stable</strong> controller synthesis for
-                    <span class="avoidwrap"><strong>arbitrary dynamics</strong></span>
-                </h2>
-                {/*<div class="column is-6">
-                </div>
-                <div class="column is-6">
-                </div>*/}
-                {/*<div class="publication-video">
-                    <iframe src="https://www.youtube.com/embed/BXh05217FJ4?rel=0&amp;showinfo=0"
-                            allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                </div>*/}
-            </div>
+    <section class="teaser container is-max-desktop">
+        <header>
+            <h2>
+                <strong>Safe</strong> and <strong>stable</strong> controller synthesis for
+                <span class="avoidwrap"><strong>arbitrary dynamics</strong></span>
+            </h2>
+        </header>
+        <div class="teaser-vids">
+            <video autoplay muted playsinline loop>
+                <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/hopper_seq.webm` />
+                <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/hopper_seq_h265.mp4` />
+            </video>
+            <video autoplay muted playsinline loop>
+                <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/f16_seq.webm` />
+                <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/f16_seq_h265.mp4` />
+            </video>
         </div>
     </section>
 
-    <section class="section">
-        <div class="container is-max-desktop">
-            {/*<h2 class="title is-4">Stabilize-Avoid with Constrained Optimal Control</h2>*/}
-            <h2 class="section-title">Stabilize-Avoid with Constrained Optimal Control</h2>
-            <div class="columns is-vcentered">
-                <div id="unicycle-vid-col" class="column">
-                    <video autoplay muted playsinline loop>
-                        <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/anim_pause.webm` />
-                        <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/anim_pause_h265.mp4` />
-                    </video>
-                </div>
-                <div id="unicycle-txt-col" class="column">
+    <main>
+        <section id="summary" class="container is-max-desktop">
+            <header>
+                <h2 class="section-title">Stabilize-Avoid with Constrained Optimal Control</h2>
+            </header>
+            <div class="section-body">
+                <video autoplay muted playsinline loop>
+                    <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/anim_pause.webm` />
+                    <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/anim_pause_h265.mp4` />
+                </video>
+                <p>
                     EFPPO synthesizes controllers that are <strong>safe</strong> and <strong>stable</strong> by solving an
                     infinite horizon constrained optimization problem.
-                </div>
+                </p>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="section">
-        <div class="container is-max-desktop">
-            <div class="content">
+        <section id="epigraph-form" class="container is-max-desktop">
+            <header>
                 <h2 class="section-title">Better Stability with Epigraph Form</h2>
+            </header>
+            <div class="section-body">
                 <p>
                     EFPPO uses the <b>epigraph form</b> to solve the constrained optimization problem, improving numerical
                     stability over classical Lagrangian duality methods.
@@ -87,10 +86,25 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
                     <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/comparison.mp4` />
                 </video>
             </div>
-        </div>
-    </section>
+        </section>
 
-    {/*<section class="section">
+        <section id="experiments" class="container is-max-desktop">
+            <header>
+                <h2 class="section-title">Simulation Experiments</h2>
+            </header>
+            <div class="section-body">
+                <video autoplay muted playsinline loop>
+                    <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/hopper_compare.webm` />
+                    <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/hopper_compare.mp4` />
+                </video>
+                <video autoplay muted playsinline loop>
+                    <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/f16_compare.webm` />
+                    <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/f16_compare.mp4` />
+                </video>
+            </div>
+        </section>
+
+        {/*<section class="section">
         <div class="container is-max-desktop">
             <div class="content">
                 <h2 class="title is-4">Simulation Experiments</h2>
@@ -102,38 +116,124 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         </div>
     </section>*/}
 
-    <section class="section">
-        <div id="abstract" class="container is-max-desktop has-text-justified">
-            <h2 class="section-title">Abstract</h2>
-            <p>
-                Tasks for autonomous robotic systems commonly require stabilization to a desired region while maintaining safety specifications. However, solving this multi-objective problem is challenging when the dynamics are nonlinear and high-dimensional, as traditional methods do not scale well and are often limited to specific problem structures.
-            </p>
-            <p>
-                To address this issue, we propose a novel approach to solve the stabilize-avoid problem via the solution of an infinite-horizon constrained optimal control problem (OCP).
-                We transform the constrained OCP into epigraph form and obtain a two-stage optimization problem that optimizes over the policy in the inner problem and over an auxiliary variable in the outer problem.
-                We then propose a new method for this formulation that combines an on-policy deep reinforcement learning algorithm with neural network regression.
-                Our method yields better stability during training, avoids instabilities caused by saddle-point finding, and is not restricted to specific requirements on the problem structure compared to more traditional methods.
-                We validate our approach on different benchmark tasks, ranging from low-dimensional toy examples to an F16 fighter jet with a 17-dimensional state space.
-                Simulation results show that <strong>our approach consistently yields controllers that match or exceed the safety of existing methods while providing ten-fold increases in stability performance from larger regions of attraction.</strong>
-            </p>
-        </div>
-    </section>
+        <section id="abstract" class="container is-max-desktop">
+            <header>
+                <h2 class="section-title">Abstract</h2>
+            </header>
+            <div class="section-body has-text-justified">
+                <p>
+                    Tasks for autonomous robotic systems commonly require stabilization to a desired region while maintaining safety specifications. However, solving this multi-objective problem is challenging when the dynamics are nonlinear and high-dimensional, as traditional methods do not scale well and are often limited to specific problem structures.
+                </p>
+                <p>
+                    To address this issue, we propose a novel approach to solve the stabilize-avoid problem via the solution of an infinite-horizon constrained optimal control problem (OCP).
+                    We transform the constrained OCP into epigraph form and obtain a two-stage optimization problem that optimizes over the policy in the inner problem and over an auxiliary variable in the outer problem.
+                    We then propose a new method for this formulation that combines an on-policy deep reinforcement learning algorithm with neural network regression.
+                    Our method yields better stability during training, avoids instabilities caused by saddle-point finding, and is not restricted to specific requirements on the problem structure compared to more traditional methods.
+                    We validate our approach on different benchmark tasks, ranging from low-dimensional toy examples to an F16 fighter jet with a 17-dimensional state space.
+                    Simulation results show that <strong>our approach consistently yields controllers that match or exceed the safety of existing methods while providing ten-fold increases in stability performance from larger regions of attraction.</strong>
+                </p>
+            </div>
+        </section>
+    </main>
+
+
 </Layout>
 
 <style>
-    .teaser {
-        font-family: "Google Sans", sans-serif;
-        padding: 0.5rem 2.5rem;
-        margin-bottom: 0.5rem;
+    main {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+        margin: 3rem 0;
+        padding: 0 1.25rem;
     }
 
-    .publication-video {
-        position: relative;
+    main > section.container {
         width: 100%;
-        height: 0;
-        padding-bottom: 56.25%;
-        overflow: hidden;
-        border-radius: 10px !important;
+        margin: 1rem auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .section-body {
+        display: flex;
+        align-items: center;
+        row-gap: 0.25em;
+        column-gap: 1em;
+    }
+
+    .teaser {
+        font-family: "Google Sans", sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 1em;
+        flex-wrap: wrap;
+    }
+
+    .teaser > header {
+        padding: 0 1.25rem;
+    }
+
+    #summary > .section-body {
+        flex-wrap: wrap;
+        text-align: center;
+    }
+
+    #epigraph-form > .section-body {
+        flex-direction: column;
+    }
+
+    #experiments > .section-body {
+        flex-direction: column;
+        row-gap: 1em;
+        margin: 0 -1rem;
+    }
+
+    #abstract > .section-body {
+        flex-direction: column;
+        row-gap: 1.1em;
+    }
+
+
+    @media screen and (min-width: 1024px) {
+        .teaser {
+            flex-wrap: nowrap;
+        }
+
+        .teaser > header {
+            padding: 0 0;
+        }
+
+        #summary > .section-body {
+            flex-wrap: nowrap;
+        }
+
+        main {
+            padding: 0 0;
+        }
+    }
+
+    .teaser > header {
+        text-align: center;
+        font-size: 1.5rem;
+        flex: 1 4 auto;
+    }
+
+    .teaser > .teaser-vids {
+        flex: 1 6 auto;
+        display: flex;
+        max-width: 100%;
+    }
+
+    video {
+        min-width: 5%;
+    }
+
+
+    #summary > .section-body > video {
+        flex: 1 1 auto;
+        max-height: 80vh;
     }
 
     h2, h3 {
@@ -165,14 +265,6 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         width: 100.0%;
     }
 
-    .subtitle {
-        font-size: 1.5rem;
-    }
-
-    .section {
-        padding: 2rem 1.5rem;
-    }
-
     .section-title {
         font-weight: 600;
         line-height: 1.125;
@@ -184,21 +276,9 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         margin-bottom: 1.5rem;
     }
 
-    .column {
-        padding: 0.2rem 0.75rem;
-    }
-
-    .columns {
-        margin-top: 0;
-    }
-
     @media screen and (min-width: 1280px){
-        .subtitle {
+        .short-tag {
             font-size: 2rem;
-        }
-
-        .section {
-            padding: 3rem 1.5rem;
         }
 
         .section-title {
@@ -215,10 +295,6 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         #unicycle-txt-col {
             width: 60.0%;
         }
-
-        .column {
-            padding: 0.75rem 0.75rem;
-        }
     }
 
     @media screen and (min-width: 2000px) {
@@ -228,9 +304,5 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         #unicycle-txt-col {
             width: 50%;
         }
-    }
-
-    #abstract p:not(:last-child) {
-        margin-bottom: 1em;
     }
 </style>
