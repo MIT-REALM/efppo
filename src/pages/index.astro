@@ -18,8 +18,8 @@ const authors: Author[] = [
 const links: Link[] = [
     // {"name": "Paper", "url": "b", "icon_class": "fas fa-file-pdf"},
     // {"name": "arXiv", "url": "b", "icon_class": "ial icon-arxiv-logo-small"},
-    {"name": "Paper (Soon)", "disabled": "Coming Soon", "icon_class": "fas fa-file-pdf"},
-    {"name": "arXiv (Soon)", "disabled": "Coming Soon", "icon_class": "ial icon-arxiv-logo-small"},
+    {"name": "Paper", "url": "https://arxiv.org/pdf/2305.14154.pdf", "icon_class": "fas fa-file-pdf"},
+    {"name": "arXiv", "url": "https://arxiv.org/abs/2305.14154", "icon_class": "ial icon-arxiv-logo-small"}
     // {"name": "Presentation Video", "url": "b", "icon_class": "fab fa-youtube"},
 ]
 
@@ -45,12 +45,12 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         </header>
         <div class="teaser-vids">
             <video autoplay muted playsinline loop>
-                <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/hopper_seq.webm` />
-                <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/hopper_seq_h265.mp4` />
+                <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/hopper_seq.webm`/>
+                <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/hopper_seq_h265.mp4`/>
             </video>
             <video autoplay muted playsinline loop>
-                <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/f16_seq.webm` />
-                <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/f16_seq_h265.mp4` />
+                <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/f16_seq.webm`/>
+                <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/f16_seq_h265.mp4`/>
             </video>
         </div>
     </section>
@@ -61,12 +61,18 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
                 <h2 class="section-title">Stabilize-Avoid with Constrained Optimal Control</h2>
             </header>
             <div class="section-body">
-                <video autoplay muted playsinline loop>
-                    <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/anim_pause.webm` />
-                    <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/anim_pause_h265.mp4` />
-                </video>
+                <figure>
+                    <video autoplay muted playsinline loop>
+                        <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/anim_pause.webm`/>
+                        <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/anim_pause_h265.mp4`/>
+                    </video>
+                    <figcaption>Tackling safety using constraints over an infinite horizon allows us to identify the invariant
+                        region (<span id="shade-blue">shades of blue</span>) from which we can maintain constraint satisfaction.
+                    </figcaption>
+                </figure>
                 <p>
-                    EFPPO synthesizes controllers that are <strong>safe</strong> and <strong>stable</strong> by solving an
+                    EFPPO synthesizes controllers that are <strong>safe</strong> and <strong>stable</strong> by solving
+                    an
                     infinite horizon constrained optimization problem.
                 </p>
             </div>
@@ -78,13 +84,27 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
             </header>
             <div class="section-body">
                 <p>
-                    EFPPO uses the <b>epigraph form</b> to solve the constrained optimization problem, improving numerical
-                    stability over classical Lagrangian duality methods.
+                    EFPPO uses the <b>epigraph form</b> to solve the constrained optimization problem, improving
+                    optimization
+                    stability over classical Lagrangian duality methods. The gradient for (CMDP) Lagrangian
+                    duality-based methods scales <u>linearly</u> with \(\lambda\),
+                    while the gradient for the epigraph form <u>does not scale</u> with \(z\), which
+                    can cause optimization problems when \(\lambda\) grows large.
                 </p>
-                <video autoplay muted playsinline loop>
-                    <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/comparison.webm` />
-                    <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/comparison.mp4` />
-                </video>
+                <figure>
+                    <video autoplay muted playsinline loop>
+                        <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/comparison.webm`/>
+                        <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/comparison.mp4`/>
+                    </video>
+                    <figcaption>
+                        Varying \(\lambda\) and \(z\) on
+                        the same <span id="cost-blue">cost function</span> and
+                        <span id="constraint-red">constraint function</span> at a given <span
+                            id="pt-yellow">point</span>, the gradient norms (right) of the <span id="obj-purple">objective</span>
+                        grow for
+                        <span class="lagr-green">Lagrangian duality</span> but not for the <span class="epi-pink">epigraph form</span>.
+                    </figcaption>
+                </figure>
             </div>
         </section>
 
@@ -93,14 +113,33 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
                 <h2 class="section-title">Simulation Experiments</h2>
             </header>
             <div class="section-body">
-                <video autoplay muted playsinline loop>
-                    <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/hopper_compare.webm` />
-                    <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/hopper_compare.mp4` />
-                </video>
-                <video autoplay muted playsinline loop>
-                    <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/f16_compare.webm` />
-                    <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/f16_compare.mp4` />
-                </video>
+                <section class="task-section">
+                    <h3 class="task-name">Hopper</h3>
+                    <dl class="task-summary">
+                        <dt class="def-stabilize">Stabilize</dt>
+                        <dd>Torso is stable in the <span class="box-green">green box</span></dd>
+                        <dt class="def-avoid">Avoid</dt>
+                        <dd>Torso touches the <span class="box-red">red box</span></dd>
+                    </dl>
+                    <video autoplay muted playsinline loop>
+                        <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/hopper_compare.webm`/>
+                        <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/hopper_compare_h265.mp4`/>
+                    </video>
+                </section>
+
+                <section class="task-section">
+                    <h3 class="task-name">F16 Fighter Jet</h3>
+                    <dl class="task-summary">
+                        <dt class="def-stabilize">Stabilize</dt>
+                        <dd>Stabilize to the <span class="box-green">green region</span> near the floor</dd>
+                        <dt class="def-avoid">Avoid</dt>
+                        <dd>Avoid hitting the floor, ceiling or walls. Avoid extreme angles of attack.</dd>
+                    </dl>
+                    <video autoplay muted playsinline loop>
+                        <source type="video/webm" src=`${import.meta.env.BASE_URL}/media/f16_compare.webm`/>
+                        <source type="video/mp4" src=`${import.meta.env.BASE_URL}/media/f16_compare_h265.mp4`/>
+                    </video>
+                </section>
             </div>
         </section>
 
@@ -122,15 +161,26 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
             </header>
             <div class="section-body has-text-justified">
                 <p>
-                    Tasks for autonomous robotic systems commonly require stabilization to a desired region while maintaining safety specifications. However, solving this multi-objective problem is challenging when the dynamics are nonlinear and high-dimensional, as traditional methods do not scale well and are often limited to specific problem structures.
+                    Tasks for autonomous robotic systems commonly require stabilization to a desired region while
+                    maintaining safety specifications. However, solving this multi-objective problem is challenging when
+                    the dynamics are nonlinear and high-dimensional, as traditional methods do not scale well and are
+                    often limited to specific problem structures.
                 </p>
                 <p>
-                    To address this issue, we propose a novel approach to solve the stabilize-avoid problem via the solution of an infinite-horizon constrained optimal control problem (OCP).
-                    We transform the constrained OCP into epigraph form and obtain a two-stage optimization problem that optimizes over the policy in the inner problem and over an auxiliary variable in the outer problem.
-                    We then propose a new method for this formulation that combines an on-policy deep reinforcement learning algorithm with neural network regression.
-                    Our method yields better stability during training, avoids instabilities caused by saddle-point finding, and is not restricted to specific requirements on the problem structure compared to more traditional methods.
-                    We validate our approach on different benchmark tasks, ranging from low-dimensional toy examples to an F16 fighter jet with a 17-dimensional state space.
-                    Simulation results show that <strong>our approach consistently yields controllers that match or exceed the safety of existing methods while providing ten-fold increases in stability performance from larger regions of attraction.</strong>
+                    To address this issue, we propose a novel approach to solve the stabilize-avoid problem via the
+                    solution of an infinite-horizon constrained optimal control problem (OCP).
+                    We transform the constrained OCP into epigraph form and obtain a two-stage optimization problem that
+                    optimizes over the policy in the inner problem and over an auxiliary variable in the outer problem.
+                    We then propose a new method for this formulation that combines an on-policy deep reinforcement
+                    learning algorithm with neural network regression.
+                    Our method yields better stability during training, avoids instabilities caused by saddle-point
+                    finding, and is not restricted to specific requirements on the problem structure compared to more
+                    traditional methods.
+                    We validate our approach on different benchmark tasks, ranging from low-dimensional toy examples to
+                    an F16 fighter jet with a 17-dimensional state space.
+                    Simulation results show that <strong>our approach consistently yields controllers that match or
+                    exceed the safety of existing methods while providing ten-fold increases in stability performance
+                    from larger regions of attraction.</strong>
                 </p>
             </div>
         </section>
@@ -159,8 +209,10 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
     .section-body {
         display: flex;
         align-items: center;
-        row-gap: 0.25em;
+        row-gap: 0.8em;
         column-gap: 1em;
+
+        font-size: 1.2em;
     }
 
     .teaser {
@@ -178,6 +230,7 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
     #summary > .section-body {
         flex-wrap: wrap;
         text-align: center;
+        flex-direction: column-reverse;
     }
 
     #epigraph-form > .section-body {
@@ -186,7 +239,7 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
 
     #experiments > .section-body {
         flex-direction: column;
-        row-gap: 1em;
+        row-gap: 1.5em;
         margin: 0 -1rem;
     }
 
@@ -207,6 +260,7 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
 
         #summary > .section-body {
             flex-wrap: nowrap;
+            flex-direction: row;
         }
 
         main {
@@ -216,7 +270,7 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
 
     .teaser > header {
         text-align: center;
-        font-size: 1.5rem;
+        font-size: 1.7rem;
         flex: 1 4 auto;
     }
 
@@ -261,6 +315,7 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
     #unicycle-vid-col {
         width: 100.0%
     }
+
     #unicycle-txt-col {
         width: 100.0%;
     }
@@ -272,11 +327,17 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         font-size: 1.6rem;
     }
 
+    .task-name {
+        font-weight: 600;
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
     .section-title:not(:last-child) {
         margin-bottom: 1.5rem;
     }
 
-    @media screen and (min-width: 1280px){
+    @media screen and (min-width: 1280px) {
         .short-tag {
             font-size: 2rem;
         }
@@ -292,6 +353,7 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         #unicycle-vid-col {
             width: 40.0%
         }
+
         #unicycle-txt-col {
             width: 60.0%;
         }
@@ -301,8 +363,117 @@ const ga: GAInfo = {"id": "G-XSZ0VNSN4H"};
         #unicycle-vid-col {
             width: 50%;
         }
+
         #unicycle-txt-col {
             width: 50%;
         }
+    }
+
+    u {
+        text-decoration: none;
+        border-bottom: 1px solid #444444;
+    }
+
+    #abstract > .section-body > p {
+        font-size: 0.9rem;
+    }
+
+    @media screen and (min-width: 1024px) {
+        #abstract > .section-body > p {
+            font-size: 0.95em;
+        }
+    }
+
+    figcaption {
+        font-size: 0.8em;
+    }
+
+    #shade-blue {
+        background-color: #E0F7FA;
+        color: #167783;
+        padding: 0.2em 0.3em;
+    }
+
+    #cost-blue {
+        color: #348ABD;
+        font-weight: 600;
+    }
+
+    #constraint-red {
+        color: #E24A33;
+        font-weight: 600;
+    }
+
+    #pt-yellow {
+        color: #FBC15E;
+        font-weight: 600;
+    }
+
+    #obj-purple {
+        color: #988ED5;
+        font-weight: 600;
+    }
+
+    .lagr-green {
+        color: #8EBA42;
+        font-weight: 600;
+    }
+
+    .epi-pink {
+        color: #FFB5B8;
+        font-weight: 600;
+    }
+
+    .box-green, .box-red {
+        padding: 0.1em 0.25em;
+    }
+
+    .box-green {
+        background-color: #E8F5E9;
+        color: #3D8840;
+    }
+
+    .box-red {
+        background-color: #FFEBEE;
+        color: #AE2020;
+    }
+
+    dl.task-summary {
+        display: grid;
+        grid-template-columns: min-content auto;
+        margin: 0 auto 0.4em;
+        grid-column-gap: 1em;
+        align-items: center;
+    }
+
+    .def-stabilize {
+        color: hsl(122 58% 20%);
+    }
+
+    .def-avoid {
+        color: hsl(0 89% 20%);
+    }
+
+    @media screen and (min-width: 1024px) {
+        dl.task-summary {
+            max-width: 80%;
+        }
+    }
+
+    dt {
+        grid-column: 1;
+        font-weight: 600;
+        font-size: 1.2em;
+        text-align: center;
+    }
+
+    dd {
+        grid-column: 2;
+    }
+
+    dt, dd {
+        display: table-cell;
+        margin: 0;
+        padding: .5em .5em;
     }
 </style>
