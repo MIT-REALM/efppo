@@ -1,0 +1,30 @@
+[project]
+name = "efppo"
+authors = [
+    {name = "Oswin So", email = "oswinso@gmail.com"},
+]
+dependencies = [
+    "jax",
+    "jaxtyping",
+    "loguru",
+    "attrs",
+    "equinox",
+    "flax",
+    "ipdb",
+    "typer",
+    "wandb",
+    "einops",
+    "tfp-nightly[jax]",
+    "seaborn",
+    "shapely"
+]
+dynamic = ["version"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.isort]
+profile = "black"
+known_first_party = [""]
+
