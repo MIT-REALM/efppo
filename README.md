@@ -4,6 +4,14 @@
 
 </div>
 
+<p align="center">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" width="16%" />
+    <img src="https://raw.githubusercontent.com/MIT-REALM/efppo/website/public/media/hopper.gif" width="32%" />
+    &ensp;
+    <img src="https://raw.githubusercontent.com/MIT-REALM/efppo/website/public/media/f16.gif" width="32%" />
+    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/1x1.png" width="16%" />
+</p>
+
 <div align="center">
 
 ### Solving Stabilize-Avoid Optimal Control via Epigraph Form and Deep Reinforcement Learning
