@@ -16,6 +16,7 @@ def compute_efocp_gae(
     disc_gamma: float,
     gae_lambda: float,
     J_max: float,
+    discount_to_max: bool = True
 ) -> tuple[Float[Arr, "T nh"], TFloat, TFloat]:
     """Compute GAE for stabilize-avoid. Compute it using DP, starting at V(x_T) and working backwards."""
     T, nh = T_hs.shape
@@ -28,7 +29,12 @@ def compute_efocp_gae(
         mask_h = assert_shape(mask[:, None], (T + 1, 1))
 
         # DP for Vh.
-        disc_to_h = (1 - disc_gamma) * hs + disc_gamma * next_Vhs_row
+        if discount_to_max:
+            h_disc = hs.max()
+        else:
+            h_disc = hs
+
+        disc_to_h = (1 - disc_gamma) * h_disc + disc_gamma * next_Vhs_row
         Vhs_row = assert_shape(mask_h * jnp.maximum(hs, disc_to_h), (T + 1, nh), "Vhs_row")
         # DP for Vl. Clamp it to within J_max so it doesn't get out of hand.
         Vl_row = assert_shape(mask * jnp.minimum(l + disc_gamma * next_Vl_row, J_max), T + 1)

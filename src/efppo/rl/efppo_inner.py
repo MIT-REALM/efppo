@@ -20,12 +20,11 @@ from efppo.networks.train_state import TrainState
 from efppo.networks.value_net import ConstrValueNet, CostValueNet
 from efppo.rl.collector import Collector, RolloutOutput, collect_single_mode
 from efppo.rl.gae_utils import compute_efocp_gae, compute_efocp_V
-from efppo.task.dyn_types import BBControl, BControl, BHFloat, BObs, BTState, HFloat, LFloat, ZBTState, ZBBFloat, \
-    ZBBControl, ZFloat
+from efppo.task.dyn_types import BControl, BHFloat, BObs, HFloat, LFloat, ZBBControl, ZBBFloat, ZBTState, ZFloat
 from efppo.task.task import Task
 from efppo.utils.cfg_utils import Cfg
 from efppo.utils.grad_utils import compute_norm_and_clip
-from efppo.utils.jax_types import BBFloat, BFloat, FloatScalar
+from efppo.utils.jax_types import BFloat, FloatScalar
 from efppo.utils.jax_utils import jax_vmap, merge01, tree_split_dims, tree_stack
 from efppo.utils.rng import PRNGKey
 from efppo.utils.schedules import Schedule, as_schedule
@@ -129,21 +128,21 @@ class EFPPOInner(struct.PyTreeNode):
         pol_base_cls = ft.partial(MLP, cfg.net.pol_hids, act, act_final=True, scale_final=1e-2)
         pol_cls = ft.partial(DiscretePolicyNet, pol_base_cls, task.n_actions)
         pol_def = EFWrapper(pol_cls, z_base_cls)
-        pol_tx = get_default_tx(cfg.net.pol_lr)
+        pol_tx = get_default_tx(as_schedule(cfg.net.pol_lr).make())
         pol = TrainState.create_from_def(key_pol, pol_def, (obs, z), pol_tx)
 
         # Define Vl network.
         Vl_base_cls = ft.partial(MLP, cfg.net.val_hids, act)
         Vl_cls = ft.partial(CostValueNet, Vl_base_cls)
         Vl_def = EFWrapper(Vl_cls, z_base_cls)
-        Vl_tx = get_default_tx(cfg.net.val_lr)
+        Vl_tx = get_default_tx(as_schedule(cfg.net.val_lr).make())
         Vl = TrainState.create_from_def(key_pol, Vl_def, (obs, z), Vl_tx)
 
         # Define Vh network.
         Vh_base_cls = ft.partial(MLP, cfg.net.val_hids, act)
         Vh_cls = ft.partial(ConstrValueNet, Vh_base_cls, task.nh)
         Vh_def = EFWrapper(Vh_cls, z_base_cls)
-        Vh_tx = get_default_tx(cfg.net.val_lr)
+        Vh_tx = get_default_tx(as_schedule(cfg.net.val_lr).make())
         Vh = TrainState.create_from_def(key_pol, Vh_def, (obs, z), Vh_tx)
 
         ent_cf = as_schedule(cfg.net.entropy_cf).make()
@@ -232,7 +231,7 @@ class EFPPOInner(struct.PyTreeNode):
             loss_Vl = jnp.mean((b_Vl - batch.b_Ql) ** 2)
 
             info = {
-                "loss_Vl": loss_Vl,
+                "Loss/Vl": loss_Vl,
                 "mean_Vl": b_Vl.mean(),
             }
             return loss_Vl, info
@@ -243,14 +242,14 @@ class EFPPOInner(struct.PyTreeNode):
 
             loss_Vh = jnp.mean((bh_Vh - batch.bh_Qh) ** 2)
 
-            info = {"loss_Vh": loss_Vh}
+            info = {"Loss/Vh": loss_Vh}
             return loss_Vh, info
 
         grads_Vl, Vl_info = jax.grad(get_Vl_loss, has_aux=True)(self.Vl.params)
-        grads_Vl, Vl_info["Vl_grad"] = compute_norm_and_clip(grads_Vl, self.train_cfg.clip_grad_V)
+        grads_Vl, Vl_info["Grad/Vl"] = compute_norm_and_clip(grads_Vl, self.train_cfg.clip_grad_V)
 
         grads_Vh, Vh_info = jax.grad(get_Vh_loss, has_aux=True)(self.Vh.params)
-        grads_Vh, Vh_info["Vl_grad"] = compute_norm_and_clip(grads_Vh, self.train_cfg.clip_grad_V)
+        grads_Vh, Vh_info["Grad/Vh"] = compute_norm_and_clip(grads_Vh, self.train_cfg.clip_grad_V)
 
         Vl = self.Vl.apply_gradients(grads=grads_Vl)
         Vh = self.Vh.apply_gradients(grads=grads_Vh)
@@ -289,7 +288,7 @@ class EFPPOInner(struct.PyTreeNode):
         ent_cf, clip_ratio = self.ent_cf, self.train_cfg.clip_ratio
         grads, pol_info = jax.grad(get_pol_loss, has_aux=True)(self.policy.params)
 
-        grads, pol_info["pol_grad"] = compute_norm_and_clip(grads, self.train_cfg.clip_grad_pol)
+        grads, pol_info["Grad/pol"] = compute_norm_and_clip(grads, self.train_cfg.clip_grad_pol)
         policy = self.policy.apply_gradients(grads=grads)
         return self.replace(policy=policy), pol_info
 
@@ -357,6 +356,7 @@ class EFPPOInner(struct.PyTreeNode):
         assert b_h.shape == (batch_size,)
         b_issafe = b_h <= 0
         p_unsafe = 1 - b_issafe.mean()
+        h_mean = jnp.mean(b_h)
 
         b_l = jnp.sum(b_rollout.T_l, axis=1)
         l_mean = jnp.mean(b_l)
@@ -365,5 +365,5 @@ class EFPPOInner(struct.PyTreeNode):
         l_final = jnp.mean(b_l_final)
         # --------------------------------------------
 
-        info = {"p_unsafe": p_unsafe, "cost sum": l_mean, "l_final": l_final}
+        info = {"p_unsafe": p_unsafe, "h_mean": h_mean, "cost sum": l_mean, "l_final": l_final}
         return self.EvalData(z, bb_pol, bb_prob, bb_Vl, bb_Vh, b_rollout.Tp1_state, info)

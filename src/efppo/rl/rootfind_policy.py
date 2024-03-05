@@ -41,7 +41,17 @@ class Rootfinder:
             return is_neg_grad
 
         solver = Chandrupatla(z_root_fn, n_iters=self.n_iters, init_t=0.5)
-        opt_z, _ = solver.run(self.z_min, self.z_max)
+        opt_z, _, init_state = solver.run(self.z_min, self.z_max)
+
+        # The rootfinding is only valid if we bracketed the root.
+        #         Vh < h_tgt is safe.
+        #         => -(Vh - h_tgt) > 0 is safe.
+        # If max(y1, y2) > 0, then both zmin and zmax are safe, so we take zmin.
+        # If max(y1, y2) < 0, then both zmin and zmax are unsafe, so we take zmax.
+        both_safe = (init_state.y1 > 0) & (init_state.y2 > 0)
+        both_unsafe = (init_state.y1 < 0) & (init_state.y2 < 0)
+        opt_z = jnp.where(both_safe, self.z_min, jnp.where(both_unsafe, self.z_max, opt_z))
+
         is_neg_grad_1 = False
         # is_neg_grad_0 = is_bad_root(opt_z)
         # opt_z2_ub = 0.95 * opt_z

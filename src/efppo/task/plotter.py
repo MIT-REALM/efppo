@@ -1,5 +1,6 @@
 import pathlib
 
+import einops as ei
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.collections import LineCollection
@@ -42,4 +43,24 @@ class Plotter:
         ax.scatter(bT_x[:, -1], bT_y[:, -1], color="green", s=1**2, zorder=7, marker="o")
 
         ax.autoscale_view()
+        return fig
+
+    def plot_traj2(self, bT_x):
+        figsize = 1.5 * np.array([8, 2 * self.task.nx])
+
+        b, T, _ = bT_x.shape
+        T_t = np.arange(T)
+        bT_t = ei.repeat(T_t, "T -> b T", b=b)
+
+        fig, axes = plt.subplots(self.task.nx, figsize=figsize, sharex=True, layout="constrained")
+        for ii, ax in enumerate(axes):
+            bT_xi = bT_x[:, :, ii]
+            bT_line = np.stack([bT_t, bT_xi], axis=-1)
+            colors = [C(ii) for ii in range(bT_line.shape[1])]
+            line_col = LineCollection(bT_line, lw=1.0, zorder=5, colors=colors)
+            ax.add_collection(line_col)
+            ax.autoscale_view()
+
+            ax.set_ylabel(self.task.x_labels[ii])
+        self.task.setup_traj2_plot(axes)
         return fig

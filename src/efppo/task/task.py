@@ -1,9 +1,10 @@
+from functools import cached_property
 from typing import TypeVar
 
 import matplotlib.pyplot as plt
 
 from efppo.task.dyn_types import Control, HFloat, LFloat, Obs, State
-from efppo.utils.jax_types import AnyFloat, BBFloat
+from efppo.utils.jax_types import AnyFloat, BBFloat, BoolScalar
 from efppo.utils.rng import PRNGKey
 from efppo.utils.shape_utils import assert_shape
 
@@ -13,7 +14,6 @@ TaskState = TypeVar("TaskState")
 class Task:
     NX = None
     NU = None
-    NOBS = None
 
     def step(self, state: State, control: Control) -> State:
         ...
@@ -36,6 +36,13 @@ class Task:
     @property
     def n_actions(self) -> int:
         ...
+
+    @cached_property
+    def NOBS(self):
+        x0 = self.get_x0_eval()[0]
+        obs = self.get_obs(x0)
+        (nobs,) = obs.shape
+        return nobs
 
     def sample_x0_train(self, key: PRNGKey, num: int) -> TaskState:
         raise NotImplementedError("")
@@ -76,6 +83,9 @@ class Task:
     def h_components(self, state: State) -> HFloat:
         ...
 
+    def should_reset(self, state: State) -> BoolScalar:
+        return False
+
     def chk_x(self, state: State) -> State:
         return assert_shape(state, self.nx, "state")
 
@@ -88,5 +98,12 @@ class Task:
     def setup_traj_plot(self, ax: plt.Axes):
         ax.set(xlabel="x[0]", ylabel="x[1]")
 
+    def setup_traj2_plot(self, axes: list[plt.Axes]):
+        ...
+
+    def get2d_idxs(self):
+        return [0, 1]
+
     def get2d(self, state: State) -> tuple[AnyFloat, AnyFloat]:
-        return state[..., 0], state[..., 1]
+        x_idx, y_idx = self.get2d_idxs()
+        return state[..., x_idx], state[..., y_idx]

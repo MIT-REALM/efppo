@@ -45,6 +45,15 @@ def plot_x_goal(ax: plt.Axes, bounds: tuple[float, float], goal_style: dict):
     ax.add_patch(rect)
 
 
+def plot_y_goal(ax: plt.Axes, bounds: tuple[float, float], goal_style: dict):
+    xmin, xmax = ax.get_xlim()
+    xlen = xmax - xmin
+    lb, ub = bounds
+
+    rect = plt.Rectangle((xmin, lb), xlen, ub - lb, **goal_style)
+    ax.add_patch(rect)
+
+
 def poly_to_patch(poly: shapely.Polygon, **kwargs) -> PathPatch:
     ext_path = np.asarray(poly.exterior.coords)[:, :2]
     path = Path.make_compound_path(Path(ext_path), *[Path(np.asarray(ring.coords)[:, :2]) for ring in poly.interiors])

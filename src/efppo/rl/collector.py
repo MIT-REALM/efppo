@@ -171,6 +171,8 @@ class Collector(struct.PyTreeNode):
         b_shouldreset = jr.bernoulli(key_reset_bernoulli, self.p_reset, shape=(self.cfg.n_envs,))
         # Also reset if we exceed the max rollout length.
         b_shouldreset = jnp.logical_or(b_shouldreset, collect_state.steps >= self.cfg.max_T)
+        # Also reset if the state is bad.
+        b_shouldreset = b_shouldreset | jax.vmap(self.task.should_reset)(collect_state.state)
         b_state_reset = self.task.sample_x0_train(key_reset, self.cfg.n_envs)
 
         def reset_fn(should_reset, state_reset_new, state_reset_old, steps_old):

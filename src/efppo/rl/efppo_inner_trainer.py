@@ -1,7 +1,6 @@
 import pathlib
 import time
 
-import ipdb
 import jax.random as jr
 import matplotlib.pyplot as plt
 import numpy as np
@@ -64,6 +63,9 @@ class EFPPOInnerTrainer:
         cmap = "rocket"
         cmap_Vh = "RdBu_r"
 
+        x_idx, y_idx = self.task.get2d_idxs()
+        xlabel, ylabel = self.task.x_labels[x_idx], self.task.x_labels[y_idx]
+
         fig, axes = plt.subplots(3, 3, figsize=figsize, **fig_opt)
         axes = axes.ravel().tolist()
         for grididx, ax in enumerate(axes[:nz]):
@@ -71,7 +73,7 @@ class EFPPOInnerTrainer:
             cm = ax.contourf(bb_X, bb_Y, data.zbb_Vl[grididx], levels=32, cmap=cmap)
             self.task.setup_traj_plot(ax)
             fig.colorbar(cm, ax=ax)
-            ax.set(xlabel="Position", ylabel="Velocity", title=f"z={z:.1f}")
+            ax.set(xlabel=xlabel, ylabel=ylabel, title=f"z={z:.1f}")
         fig_path = mkdir(plot_dir / "Vl") / "Vl_{:08}.jpg".format(idx)
         fig.savefig(fig_path, bbox_inches="tight")
         plt.close(fig)
@@ -85,7 +87,7 @@ class EFPPOInnerTrainer:
             cm = ax.contourf(bb_X, bb_Y, data.zbb_Vh[grididx], norm=CenteredNorm(), levels=32, cmap=cmap_Vh)
             self.task.setup_traj_plot(ax)
             fig.colorbar(cm, ax=ax)
-            ax.set(xlabel="Position", ylabel="Velocity", title=f"z={z:.1f}")
+            ax.set(xlabel=xlabel, ylabel=ylabel, title=f"z={z:.1f}")
         fig_path = mkdir(plot_dir / "Vh") / "Vh_{:08}.jpg".format(idx)
         fig.savefig(fig_path, bbox_inches="tight")
         plt.close(fig)
@@ -116,16 +118,19 @@ class EFPPOInnerTrainer:
             t0 = time.time()
             collector, col_data = alg.collect(collector)
             t1 = time.time()
-            alg, loss_info = alg.update(col_data)
+            alg, update_info = alg.update(col_data)
             t2 = time.time()
 
             if should_log:
                 if should_eval:
                     logger.info("time  |  collect: {:.3f} update: {:.3f}".format(t1 - t0, t2 - t1))
-                log_dict = {f"train/{k}": v for k, v in loss_info.items()}
+                log_dict = {f"train/{k}": v for k, v in update_info.items()}
                 log_dict["time/collect"] = t1 - t0
                 log_dict["time/update"] = t2 - t1
                 wandb.log(log_dict, step=idx)
+
+                loss_info = {k[5:]: float(v) for k, v in update_info.items() if k.startswith("Loss/")}
+                logger.info(f"[{idx:8}]   {loss_info}")
 
             eval_rollout_T = 128
             if should_eval:

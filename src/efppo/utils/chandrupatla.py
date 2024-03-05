@@ -74,9 +74,14 @@ class Chandrupatla:
 
         LARGE_NUM = np.finfo(np.float32).max
         # Choose lb as the largest negative value.
+        # If all values are positive, then take t=0.
         new_lb_idx = jnp.where(ys < 0, ys, -LARGE_NUM).argmax()
+        new_lb_idx = jnp.where(jnp.all(ys > 0), 0, new_lb_idx)
+
         # Choose ub as the smallest positive value.
+        # If all values are negative, then take t=1.
         new_ub_idx = jnp.where(ys > 0, ys, LARGE_NUM).argmin()
+        new_ub_idx = jnp.where(jnp.all(ys < 0), n_ts - 1, new_ub_idx)
 
         x1, x2 = xs[new_lb_idx], xs[new_ub_idx]
         y1, y2 = ys[new_lb_idx], ys[new_ub_idx]
@@ -159,7 +164,7 @@ class Chandrupatla:
         init_state = self.init_state(lb, ub)
         final_state, used_which = lax.scan(self._update, init_state, None, length=self.n_iters)
         best_x = self.refine_output(final_state)
-        return best_x, jnp.sum(used_which, axis=0)
+        return best_x, jnp.sum(used_which, axis=0), init_state
 
     def run_detailed(self, lb: FloatScalar, ub: FloatScalar):
         init_state = self.init_state(lb, ub)

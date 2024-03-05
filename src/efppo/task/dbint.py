@@ -17,7 +17,6 @@ from efppo.utils.rng import PRNGKey
 class DbInt(Task):
     NX = 2
     NU = 1
-    NOBS = 2
 
     def __init__(self):
         self.goal_x = 0.75
@@ -91,7 +90,7 @@ class DbInt(Task):
 
     @property
     def l_labels(self) -> list[str]:
-        return ["pos_cost", "control_cost"]
+        return ["pos_cost"]
 
     @property
     def h_labels(self) -> list[str]:
